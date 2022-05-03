@@ -5,3 +5,5 @@ vendor
 tests/config.php
 tests/debug.log
 tests/test-keychain/
+.idea/
+.phpunit.result.cache

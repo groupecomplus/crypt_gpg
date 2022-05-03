@@ -468,8 +468,8 @@ class Crypt_GPG_Engine
         } else {
             if (extension_loaded('posix')) {
                 // note: this requires the package OS dep exclude 'windows'
-                $info = posix_getpwuid(posix_getuid());
-                $this->_homedir = $info['dir'].'/.gnupg';
+                $info           = posix_getpwuid(posix_getuid());
+                $this->_homedir = $info['dir'] . '/.gnupg';
             } else {
                 if (isset($_SERVER['HOME'])) {
                     $this->_homedir = $_SERVER['HOME'];
@@ -488,7 +488,7 @@ class Crypt_GPG_Engine
         }
 
         // attempt to create homedir if it does not exist
-        if (!is_dir($this->_homedir)) {
+        if ( ! is_dir($this->_homedir)) {
             if (@mkdir($this->_homedir, 0777, true)) {
                 // Set permissions on homedir. Parent directories are created
                 // with 0777, homedir is set to 0700.
@@ -507,7 +507,7 @@ class Crypt_GPG_Engine
         }
 
         // check homedir permissions (See Bug #19833)
-        if (!is_executable($this->_homedir)) {
+        if ( ! $this->_isExecutable($this->_homedir)) {
             throw new Crypt_GPG_FileException(
                 'The \'homedir\' "' . $this->_homedir . '" is not enterable ' .
                 'by the current user. Please check the permissions on your ' .
@@ -517,7 +517,7 @@ class Crypt_GPG_Engine
                 $this->_homedir
             );
         }
-        if (!is_writeable($this->_homedir)) {
+        if ( ! is_writeable($this->_homedir)) {
             throw new Crypt_GPG_FileException(
                 'The \'homedir\' "' . $this->_homedir . '" is not writable ' .
                 'by the current user. Please check the permissions on your ' .
@@ -538,7 +538,7 @@ class Crypt_GPG_Engine
             $this->_binary = $this->_getBinary();
         }
 
-        if ($this->_binary == '' || !is_executable($this->_binary)) {
+        if ($this->_binary == '' || ! is_executable($this->_binary)) {
             throw new PEAR_Exception(
                 'GPG binary not found. If you are sure the GPG binary is ' .
                 'installed, please specify the location of the GPG binary ' .
@@ -550,7 +550,7 @@ class Crypt_GPG_Engine
         if (array_key_exists('agent', $options)) {
             $this->_agent = (string)$options['agent'];
 
-            if ($this->_agent && !is_executable($this->_agent)) {
+            if ($this->_agent && ! is_executable($this->_agent)) {
                 throw new PEAR_Exception(
                     'Specified gpg-agent binary is not executable.'
                 );
@@ -562,7 +562,7 @@ class Crypt_GPG_Engine
         if (array_key_exists('gpgconf', $options)) {
             $this->_gpgconf = $options['gpgconf'];
 
-            if ($this->_gpgconf && !is_executable($this->_gpgconf)) {
+            if ($this->_gpgconf && ! is_executable($this->_gpgconf)) {
                 throw new PEAR_Exception(
                     'Specified gpgconf binary is not executable.'
                 );
@@ -585,7 +585,7 @@ class Crypt_GPG_Engine
         // get public keyring
         if (array_key_exists('publicKeyring', $options)) {
             $this->_publicKeyring = (string)$options['publicKeyring'];
-            if (!is_readable($this->_publicKeyring)) {
+            if ( ! is_readable($this->_publicKeyring)) {
                 throw new Crypt_GPG_FileException(
                     'The \'publicKeyring\' "' . $this->_publicKeyring .
                     '" does not exist or is not readable. Check the location ' .
@@ -598,7 +598,7 @@ class Crypt_GPG_Engine
         // get private keyring
         if (array_key_exists('privateKeyring', $options)) {
             $this->_privateKeyring = (string)$options['privateKeyring'];
-            if (!is_readable($this->_privateKeyring)) {
+            if ( ! is_readable($this->_privateKeyring)) {
                 throw new Crypt_GPG_FileException(
                     'The \'privateKeyring\' "' . $this->_privateKeyring .
                     '" does not exist or is not readable. Check the location ' .
@@ -611,7 +611,7 @@ class Crypt_GPG_Engine
         // get trust database
         if (array_key_exists('trustDb', $options)) {
             $this->_trustDb = (string)$options['trustDb'];
-            if (!is_readable($this->_trustDb)) {
+            if ( ! is_readable($this->_trustDb)) {
                 throw new Crypt_GPG_FileException(
                     'The \'trustDb\' "' . $this->_trustDb .
                     '" does not exist or is not readable. Check the location ' .
@@ -625,21 +625,21 @@ class Crypt_GPG_Engine
             $this->_debug = $options['debug'];
         }
 
-        $this->_strict = !empty($options['strict']);
+        $this->_strict = ! empty($options['strict']);
 
-        if (!empty($options['digest-algo'])) {
+        if ( ! empty($options['digest-algo'])) {
             $this->_digest_algo = $options['digest-algo'];
         }
 
-        if (!empty($options['cipher-algo'])) {
+        if ( ! empty($options['cipher-algo'])) {
             $this->_cipher_algo = $options['cipher-algo'];
         }
 
-        if (!empty($options['compress-algo'])) {
+        if ( ! empty($options['compress-algo'])) {
             $this->_compress_algo = $options['compress-algo'];
         }
 
-        if (!empty($options['options'])) {
+        if ( ! empty($options['options'])) {
             $this->_options = $options['options'];
         }
     }
@@ -664,7 +664,7 @@ class Crypt_GPG_Engine
      * as its first parameter.
      *
      * @param callback $callback the callback method to use.
-     * @param array    $args     optional. Additional arguments to pass as
+     * @param array $args optional. Additional arguments to pass as
      *                           parameters to the callback method.
      *
      * @return void
@@ -685,7 +685,7 @@ class Crypt_GPG_Engine
      * handled as its first parameter.
      *
      * @param callback $callback the callback method to use.
-     * @param array    $args     optional. Additional arguments to pass as
+     * @param array $args optional. Additional arguments to pass as
      *                           parameters to the callback method.
      *
      * @return void
@@ -725,12 +725,12 @@ class Crypt_GPG_Engine
      */
     public function reset()
     {
-        $this->_operation      = '';
-        $this->_arguments      = array();
-        $this->_input          = null;
-        $this->_message        = null;
-        $this->_output         = '';
-        $this->_commandBuffer  = '';
+        $this->_operation     = '';
+        $this->_arguments     = array();
+        $this->_input         = null;
+        $this->_message       = null;
+        $this->_output        = '';
+        $this->_commandBuffer = '';
 
         $this->_statusHandlers = array();
         $this->_errorHandlers  = array();
@@ -831,7 +831,7 @@ class Crypt_GPG_Engine
      *                          of GPG's operations. For example,
      *                          <kbd>--encrypt</kbd>, <kbd>--decrypt</kbd>,
      *                          <kbd>--sign</kbd>, etc.
-     * @param array  $arguments optional. Additional arguments for the GPG
+     * @param array $arguments optional. Additional arguments for the GPG
      *                          subprocess. See the GPG manual for specific
      *                          values.
      *
@@ -970,18 +970,18 @@ class Crypt_GPG_Engine
     {
         if ($this->_processHandler) {
             switch ($name) {
-            case 'SignatureInfo':
-                if ($data = $this->_processHandler->getData('SigCreated')) {
-                    return new Crypt_GPG_SignatureCreationInfo($data);
-                }
-                break;
+                case 'SignatureInfo':
+                    if ($data = $this->_processHandler->getData('SigCreated')) {
+                        return new Crypt_GPG_SignatureCreationInfo($data);
+                    }
+                    break;
 
-            case 'Signatures':
-            case 'Warnings':
-                return (array) $this->_processHandler->getData($name);
+                case 'Signatures':
+                case 'Warnings':
+                    return (array)$this->_processHandler->getData($name);
 
-            default:
-                return $this->_processHandler->getData($name);
+                default:
+                    return $this->_processHandler->getData($name);
             }
         }
     }
@@ -989,8 +989,8 @@ class Crypt_GPG_Engine
     /**
      * Set some data for the process execution.
      *
-     * @param string $name  Data element name (e.g. 'Handle')
-     * @param mixed  $value Data value
+     * @param string $name Data element name (e.g. 'Handle')
+     * @param mixed $value Data value
      *
      * @return void
      */
@@ -1087,7 +1087,7 @@ class Crypt_GPG_Engine
             $exceptionStreams = array();
 
             // set up input streams
-            if (is_resource($this->_input) && !$inputComplete) {
+            if (is_resource($this->_input) && ! $inputComplete) {
                 if (feof($this->_input)) {
                     $inputComplete = true;
                 } else {
@@ -1101,7 +1101,7 @@ class Crypt_GPG_Engine
                 $this->_closePipe(self::FD_INPUT);
             }
 
-            if (is_resource($this->_message) && !$messageComplete) {
+            if (is_resource($this->_message) && ! $messageComplete) {
                 if (feof($this->_message)) {
                     $messageComplete = true;
                 } else {
@@ -1115,15 +1115,15 @@ class Crypt_GPG_Engine
                 $this->_closePipe(self::FD_MESSAGE);
             }
 
-            if (!feof($fdOutput)) {
+            if ( ! feof($fdOutput)) {
                 $inputStreams[] = $fdOutput;
             }
 
-            if (!feof($fdStatus)) {
+            if ( ! feof($fdStatus)) {
                 $inputStreams[] = $fdStatus;
             }
 
-            if (!feof($fdError)) {
+            if ( ! feof($fdError)) {
                 $inputStreams[] = $fdError;
             }
 
@@ -1220,8 +1220,8 @@ class Crypt_GPG_Engine
                     ' bytes from input stream'
                 );
 
-                $chunk        = fread($this->_input, self::CHUNK_SIZE);
-                $length       = mb_strlen($chunk, '8bit');
+                $chunk       = fread($this->_input, self::CHUNK_SIZE);
+                $length      = mb_strlen($chunk, '8bit');
                 $inputBuffer .= $chunk;
 
                 $this->_debug('=> read ' . $length . ' bytes');
@@ -1262,8 +1262,8 @@ class Crypt_GPG_Engine
                     ' bytes from message stream'
                 );
 
-                $chunk          = fread($this->_message, self::CHUNK_SIZE);
-                $length         = mb_strlen($chunk, '8bit');
+                $chunk         = fread($this->_message, self::CHUNK_SIZE);
+                $length        = mb_strlen($chunk, '8bit');
                 $messageBuffer .= $chunk;
 
                 $this->_debug('=> read ' . $length . ' bytes');
@@ -1277,8 +1277,8 @@ class Crypt_GPG_Engine
                     ' bytes from GPG output'
                 );
 
-                $chunk         = fread($fdOutput, self::CHUNK_SIZE);
-                $length        = mb_strlen($chunk, '8bit');
+                $chunk        = fread($fdOutput, self::CHUNK_SIZE);
+                $length       = mb_strlen($chunk, '8bit');
                 $outputBuffer .= $chunk;
 
                 $this->_debug('=> read ' . $length . ' bytes');
@@ -1319,8 +1319,8 @@ class Crypt_GPG_Engine
                     ' bytes from GPG error'
                 );
 
-                $chunk        = fread($fdError, self::CHUNK_SIZE);
-                $length       = mb_strlen($chunk, '8bit');
+                $chunk       = fread($fdError, self::CHUNK_SIZE);
+                $length      = mb_strlen($chunk, '8bit');
                 $errorBuffer .= $chunk;
 
                 $this->_debug('=> read ' . $length . ' bytes');
@@ -1350,8 +1350,8 @@ class Crypt_GPG_Engine
                     ' bytes from GPG status'
                 );
 
-                $chunk         = fread($fdStatus, self::CHUNK_SIZE);
-                $length        = mb_strlen($chunk, '8bit');
+                $chunk        = fread($fdStatus, self::CHUNK_SIZE);
+                $length       = mb_strlen($chunk, '8bit');
                 $statusBuffer .= $chunk;
 
                 $this->_debug('=> read ' . $length . ' bytes');
@@ -1418,7 +1418,6 @@ class Crypt_GPG_Engine
             if ($delay > 0) {
                 usleep($delay);
             }
-
         } // end loop while streams are open
 
         $this->_debug('END PROCESSING');
@@ -1464,7 +1463,7 @@ class Crypt_GPG_Engine
         if (version_compare($version, '2.0.0', 'ge')
             && version_compare($version, '2.1.13', 'lt')
         ) {
-            if (!$this->_agent) {
+            if ( ! $this->_agent) {
                 throw new Crypt_GPG_OpenSubprocessException(
                     'Unable to open gpg-agent subprocess (gpg-agent not found). ' .
                     'Please specify location of the gpg-agent binary ' .
@@ -1487,7 +1486,7 @@ class Crypt_GPG_Engine
 
             if ($this->_homedir) {
                 $agentArguments[] = '--homedir ' .
-                    escapeshellarg($this->_homedir);
+                                    escapeshellarg($this->_homedir);
             }
 
             if ($version21 = version_compare($version, '2.1.0', 'ge')) {
@@ -1499,9 +1498,9 @@ class Crypt_GPG_Engine
             $agentCommandLine = $this->_agent . ' ' . implode(' ', $agentArguments);
 
             $agentDescriptorSpec = array(
-                self::FD_INPUT   => array('pipe', $rb), // stdin
-                self::FD_OUTPUT  => array('pipe', $wb), // stdout
-                self::FD_ERROR   => array('pipe', $wb)  // stderr
+                self::FD_INPUT  => array('pipe', $rb), // stdin
+                self::FD_OUTPUT => array('pipe', $wb), // stdout
+                self::FD_ERROR  => array('pipe', $wb)  // stderr
             );
 
             $this->_debug('OPENING GPG-AGENT SUBPROCESS WITH THE FOLLOWING COMMAND:');
@@ -1516,7 +1515,7 @@ class Crypt_GPG_Engine
                 array('binary_pipes' => true)
             );
 
-            if (!is_resource($this->_agentProcess)) {
+            if ( ! is_resource($this->_agentProcess)) {
                 throw new Crypt_GPG_OpenSubprocessException(
                     'Unable to open gpg-agent subprocess.',
                     0,
@@ -1538,10 +1537,10 @@ class Crypt_GPG_Engine
                     if ($version21) {
                         if (preg_match('/listening on socket \'([^\']+)/', $line, $m)) {
                             $this->_agentInfo = $m[1];
-                        } else if (preg_match('/gpg-agent\[([0-9]+)\].* started/', $line, $m)) {
+                        } elseif (preg_match('/gpg-agent\[([0-9]+)\].* started/', $line, $m)) {
                             $this->_agentInfo .= ':' . $m[1] . ':1';
                         }
-                    } else if (preg_match('/GPG_AGENT_INFO[=\s]([^;]+)/', $line, $m)) {
+                    } elseif (preg_match('/GPG_AGENT_INFO[=\s]([^;]+)/', $line, $m)) {
                         $this->_agentInfo = $m[1];
                         break;
                     }
@@ -1601,22 +1600,22 @@ class Crypt_GPG_Engine
             $defaultArguments[] = '--pinentry-mode loopback';
         }
 
-        if (!$this->_strict) {
+        if ( ! $this->_strict) {
             $defaultArguments[] = '--ignore-time-conflict';
             $defaultArguments[] = '--ignore-valid-from';
         }
 
-        if (!empty($this->_digest_algo)) {
+        if ( ! empty($this->_digest_algo)) {
             $defaultArguments[] = '--digest-algo ' . escapeshellarg($this->_digest_algo);
             $defaultArguments[] = '--s2k-digest-algo ' . escapeshellarg($this->_digest_algo);
         }
 
-        if (!empty($this->_cipher_algo)) {
+        if ( ! empty($this->_cipher_algo)) {
             $defaultArguments[] = '--cipher-algo ' . escapeshellarg($this->_cipher_algo);
             $defaultArguments[] = '--s2k-cipher-algo ' . escapeshellarg($this->_cipher_algo);
         }
 
-        if (!empty($this->_compress_algo)) {
+        if ( ! empty($this->_compress_algo)) {
             $defaultArguments[] = '--compress-algo ' . escapeshellarg($this->_compress_algo);
         }
 
@@ -1627,7 +1626,7 @@ class Crypt_GPG_Engine
 
             // the random seed file makes subsequent actions faster so only
             // disable it if we have to.
-            if (!is_writeable($this->_homedir)) {
+            if ( ! is_writeable($this->_homedir)) {
                 $arguments[] = '--no-random-seed-file';
             }
         }
@@ -1638,7 +1637,7 @@ class Crypt_GPG_Engine
 
         if ($this->_privateKeyring) {
             $arguments[] = '--secret-keyring ' .
-                escapeshellarg($this->_privateKeyring);
+                           escapeshellarg($this->_privateKeyring);
         }
 
         if ($this->_trustDb) {
@@ -1646,7 +1645,7 @@ class Crypt_GPG_Engine
         }
 
         $commandLine .= ' ' . implode(' ', $arguments) . ' ' .
-            $this->_operation;
+                        $this->_operation;
 
         $descriptorSpec = array(
             self::FD_INPUT   => array('pipe', $rb), // stdin
@@ -1669,7 +1668,7 @@ class Crypt_GPG_Engine
             array('binary_pipes' => true)
         );
 
-        if (!is_resource($this->_process)) {
+        if ( ! is_resource($this->_process)) {
             throw new Crypt_GPG_OpenSubprocessException(
                 'Unable to open GPG subprocess.', 0, $commandLine
             );
@@ -1715,7 +1714,7 @@ class Crypt_GPG_Engine
 
             // proc_close() can return -1 in some cases,
             // get the real exit code from the process status
-            if ($exitCode < 0 && $status && !$status['running']) {
+            if ($exitCode < 0 && $status && ! $status['running']) {
                 $exitCode = $status['exitcode'];
             }
 
@@ -1746,7 +1745,7 @@ class Crypt_GPG_Engine
         if ($this->_agentInfo !== null) {
             $parts = explode(':', $this->_agentInfo, 3);
 
-            if (!empty($parts[1])) {
+            if ( ! empty($parts[1])) {
                 $this->_debug('STOPPING GPG-AGENT DAEMON');
 
                 $process = new Crypt_GPG_ProcessControl($parts[1]);
@@ -1853,11 +1852,13 @@ class Crypt_GPG_Engine
      */
     private function _getBinary()
     {
-        if ($binary = $this->_findBinary('gpg')) {
+        $extension = $this->_isWindows() ? '.exe' : '';
+
+        if ($binary = $this->_findBinary('gpg' . $extension)) {
             return $binary;
         }
 
-        return $this->_findBinary('gpg2');
+        return $this->_findBinary('gpg2' . $extension);
     }
 
     /**
@@ -1893,7 +1894,7 @@ class Crypt_GPG_Engine
      *                system. If no suitable binary could be found, an empty
      *                string is returned.
      */
-    private function _findBinary($name)
+    private function _findBinary(string $name)
     {
         $binary = '';
 
@@ -1904,6 +1905,10 @@ class Crypt_GPG_Engine
                 '/sw/bin/',        // Fink
                 '/usr/bin/'
             );
+        } elseif ($this->_isWindows()) {
+            $locations = array_map(function (string $path) {
+                return realpath($path) . DIRECTORY_SEPARATOR;
+            }, explode(';', getenv('PATH')));
         } else {
             $locations = array(
                 '/usr/bin/',
@@ -1934,8 +1939,8 @@ class Crypt_GPG_Engine
         $root  = __DIR__ . $ds . '..' . $ds . '..' . $ds;
         $paths = array(
             '@bin-dir@', // PEAR
-             $root . 'scripts', // Git
-             $root . 'bin', // Composer
+            $root . 'scripts', // Git
+            $root . 'bin', // Composer
         );
 
         foreach ($paths as $path) {
@@ -1967,9 +1972,25 @@ class Crypt_GPG_Engine
                 // running on a web server, format debug output nicely
                 foreach (explode(PHP_EOL, $text) as $line) {
                     echo "Crypt_GPG DEBUG: <strong>", htmlspecialchars($line),
-                        '</strong><br />', PHP_EOL;
+                    '</strong><br />', PHP_EOL;
                 }
             }
         }
     }
+
+    private function _isExecutable(string $path): bool
+    {
+        if ($this->_isWindows() && is_dir($path)) {
+            return true;
+        }
+
+        return is_executable($path);
+    }
+
+    private function _isWindows(): bool
+    {
+        return 'Windows' === PHP_OS_FAMILY;
+    }
+
+
 }
